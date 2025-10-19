@@ -1,11 +1,9 @@
-import argparse, json, re
+import argparse, json
 from pathlib import Path
 import pandas as pd
 from sentence_transformers import SentenceTransformer, util
 
-# 간단 긍부정 단어 목록
-POS_WORDS = {"good","benefit","positive","improve","advantage","growth","safe","support"}
-NEG_WORDS = {"bad","risk","negative","harm","problem","danger","fail","threat"}
+from project.src.sentiment_utils import compute_sentiment, lexical_stats, get_vader, get_transformer
 
 def read_jsonl(path):
     with open(path, "r", encoding="utf-8") as f:
@@ -13,39 +11,52 @@ def read_jsonl(path):
             if line.strip():
                 yield json.loads(line)
 
-def analyze(text):
-    tokens = re.findall(r"\w+", text.lower())
-    n = len(tokens)
-    unique = len(set(tokens)) if n else 0
-    ttr = unique / n if n else 0
-    pos = sum(w in POS_WORDS for w in tokens)
-    neg = sum(w in NEG_WORDS for w in tokens)
-    polarity = (pos - neg) / max(1, n)
-    return {"len": n, "ttr": ttr, "polarity": polarity}
+
+def analyze(text, method, analyzer):
+    stats = lexical_stats(text)
+    stats["polarity"] = compute_sentiment(text, method=method, analyzer=analyzer)
+    return stats
+
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--input_dir", default="project/outputs")
     ap.add_argument("--out_csv", default="project/outputs/sensitivity.csv")
+    ap.add_argument("--method", choices=["vader", "transformer"], default="vader",
+                    help="Sentiment analysis backend (vader or transformer)")
     args = ap.parse_args()
 
-    # 모든 jsonl 파일 읽기
+    analyzer = get_vader() if args.method == "vader" else get_transformer()
+
+    print(f"[INFO] Loading jsonl files from {args.input_dir}")
     paths = list(Path(args.input_dir).rglob("*.jsonl"))
+    if not paths:
+        print("[WARN] No .jsonl files found.")
+        return
+
     rows = []
     for p in paths:
         for rec in read_jsonl(p):
-            meta = {"file": p.name, "frame": rec.get("frame"), "topic": rec.get("topic", ""), "prompt": rec.get("prompt", ""), "response": rec.get("response", "")}
-            meta.update(analyze(rec.get("response", "")))
-            rows.append(meta)
-    df = pd.DataFrame(rows)
-    df.to_csv(args.out_csv, index=False)
-    print(f"[OK] Saved raw metrics → {args.out_csv}")
+            metrics = analyze(rec.get("response", ""), args.method, analyzer)
+            rows.append({
+                "file": p.name,
+                "frame": rec.get("frame"),
+                "topic": rec.get("topic", ""),
+                "prompt": rec.get("prompt", ""),
+                "response": rec.get("response", ""),
+                **metrics
+            })
 
-    # ---------------- Embedding Similarity ----------------
-    print("[Info] Calculating embedding-based similarities ...")
+    df = pd.DataFrame(rows)
+    out_path = Path(args.out_csv)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(out_path, index=False)
+    print(f"[OK] Saved raw metrics → {out_path}")
+
+    # ---------- Embedding Similarity ----------
+    print("[INFO] Calculating embedding-based similarities ...")
     model = SentenceTransformer("all-MiniLM-L6-v2")
 
-    # prompt별 그룹화
     sim_records = []
     for prompt, group in df.groupby("prompt"):
         if len(group) < 2:
@@ -56,17 +67,18 @@ def main():
         sim_records.append({
             "prompt": prompt,
             "avg_embedding_similarity": round(avg_sim, 4),
-            "frames": list(group["frame"].unique()),
+            "frames": list(group["frame"].unique())
         })
 
     sim_df = pd.DataFrame(sim_records)
     sim_df.to_csv("project/outputs/embedding_similarity.csv", index=False)
     print("[OK] Saved embedding similarity scores.")
 
-    # ---------------- Summary ----------------
+    # ---------- Summary ----------
     print("\n=== Control Sensitivity Summary ===")
-    summary = df.groupby("frame")[["len", "ttr", "polarity"]].agg(["mean", "std"]).round(3)
+    summary = df.groupby("frame")[["length", "ttr", "polarity"]].agg(["mean", "std"]).round(3)
     print(summary)
+
     print("\nAverage embedding similarity per prompt:")
     print(sim_df.head())
 
