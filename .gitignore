@@ -1,0 +1,58 @@
+# ------------------------------
+# Python / Virtual Environment
+# ------------------------------
+venv/
+.venv/
+env/
+ENV/
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.pkl
+*.tmp
+
+# ------------------------------
+# Virtualenv / Pip / Poetry
+# ------------------------------
+.venv/
+pip-wheel-metadata/
+*.egg-info/
+dist/
+build/
+
+# ------------------------------
+# Jupyter / Colab
+# ------------------------------
+.ipynb_checkpoints/
+*.ipynb_save
+*.ipynb_convert
+*.ipynb_restore
+*.ipynb_cache
+
+# ------------------------------
+# VSCode / PyCharm / Editor
+# ------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ------------------------------
+# Data / Output / Logs
+# ------------------------------
+*.csv
+*.jsonl
+*.log
+*.out
+*.tsv
+*.cache
+nlp-proj/outputs/
+nlp-proj/results/
+nlp-proj/logs/
+
+# ------------------------------
+# OS Files
+# ------------------------------
+.DS_Store
+Thumbs.db
