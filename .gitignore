@@ -47,9 +47,6 @@ build/
 *.out
 *.tsv
 *.cache
-nlp-proj/outputs/
-nlp-proj/results/
-nlp-proj/logs/
 
 # ------------------------------
 # OS Files
