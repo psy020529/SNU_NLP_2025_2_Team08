@@ -24,7 +24,8 @@ def generate_responses(
     prompts: List[str],
     device: str,
     max_new_tokens: int = 256,
-    batch_size: int = 4
+    batch_size: int = 4,
+    temperature: Optional[float] = None
 ) -> List[str]:
     """Generate responses for a list of prompts."""
     responses = []
@@ -40,12 +41,23 @@ def generate_responses(
         ).to(device)
         
         with torch.no_grad():
-            outputs = model.generate(
-                **inputs,
-                max_new_tokens=max_new_tokens,
-                do_sample=False,
-                num_beams=1
-            )
+            if temperature is not None:
+                # Use sampling with temperature
+                outputs = model.generate(
+                    **inputs,
+                    max_new_tokens=max_new_tokens,
+                    do_sample=True,
+                    temperature=temperature,
+                    top_p=0.9
+                )
+            else:
+                # Use greedy decoding (deterministic)
+                outputs = model.generate(
+                    **inputs,
+                    max_new_tokens=max_new_tokens,
+                    do_sample=False,
+                    num_beams=1
+                )
         
         batch_responses = tokenizer.batch_decode(outputs, skip_special_tokens=True)
         responses.extend(batch_responses)

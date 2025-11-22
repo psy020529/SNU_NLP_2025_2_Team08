@@ -10,6 +10,7 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from project.src.prompts import make_system_prompt
+from project.src.prompts_fewshot import make_fewshot_prompt, make_simple_prompt
 from project.src.model_utils import load_model_and_tokenizer, generate_responses
 
 def load_prompts_from_jsonl(jsonl_path):
@@ -41,6 +42,10 @@ def main():
                        help="Max tokens to generate")
     parser.add_argument("--prompts-file", type=str, default=None,
                        help="Path to prompts JSONL file (optional)")
+    parser.add_argument("--use-fewshot", action="store_true",
+                       help="Use few-shot examples in prompts")
+    parser.add_argument("--temperature", type=float, default=None,
+                       help="Sampling temperature (enables sampling if set)")
     
     args = parser.parse_args()
     
@@ -93,17 +98,24 @@ def main():
         ]
         prompts = DEFAULT_PROMPTS[:args.num_samples]
     
-    # Prepare prompts with system frame
-    full_prompts = [f"{system_prompt}\n\nQuestion: {p}\n\nAnswer:" for p in prompts]
+    # Prepare prompts with system frame (with or without few-shot)
+    if args.use_fewshot:
+        print("Using few-shot examples")
+        full_prompts = [make_fewshot_prompt(args.frame, p, system_prompt) for p in prompts]
+    else:
+        full_prompts = [make_simple_prompt(args.frame, p, system_prompt) for p in prompts]
     
     print(f"\nGenerating {len(prompts)} responses...")
+    if args.temperature:
+        print(f"Using temperature: {args.temperature}")
     responses = generate_responses(
         model,
         tokenizer,
         full_prompts,
         device,
         max_new_tokens=args.max_new_tokens,
-        batch_size=args.batch_size
+        batch_size=args.batch_size,
+        temperature=args.temperature
     )
     
     # Save results
