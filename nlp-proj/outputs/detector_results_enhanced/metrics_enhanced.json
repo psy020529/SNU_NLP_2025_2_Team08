@@ -1,0 +1,122 @@
+{
+  "auc": 0.532051282051282,
+  "confusion_matrix": [
+    [
+      7,
+      13
+    ],
+    [
+      15,
+      24
+    ]
+  ],
+  "classification_report": {
+    "0": {
+      "precision": 0.3181818181818182,
+      "recall": 0.35,
+      "f1-score": 0.3333333333333333,
+      "support": 20.0
+    },
+    "1": {
+      "precision": 0.6486486486486487,
+      "recall": 0.6153846153846154,
+      "f1-score": 0.631578947368421,
+      "support": 39.0
+    },
+    "accuracy": 0.5254237288135594,
+    "macro avg": {
+      "precision": 0.4834152334152334,
+      "recall": 0.4826923076923077,
+      "f1-score": 0.48245614035087714,
+      "support": 59.0
+    },
+    "weighted avg": {
+      "precision": 0.5366259942531129,
+      "recall": 0.5254237288135594,
+      "f1-score": 0.5304787392209337,
+      "support": 59.0
+    }
+  },
+  "feature_importance": [
+    {
+      "feature": "avg_word_length",
+      "importance": 0.06955047479521494
+    },
+    {
+      "feature": "length",
+      "importance": 0.05749543069406677
+    },
+    {
+      "feature": "tfidf_97",
+      "importance": 0.05373164157493738
+    },
+    {
+      "feature": "certainty_ratio",
+      "importance": 0.05089025680456422
+    },
+    {
+      "feature": "tfidf_9",
+      "importance": 0.04770645239112291
+    },
+    {
+      "feature": "tfidf_79",
+      "importance": 0.038263869419129445
+    },
+    {
+      "feature": "tfidf_52",
+      "importance": 0.03437195380143361
+    },
+    {
+      "feature": "tfidf_98",
+      "importance": 0.033779008904204474
+    },
+    {
+      "feature": "tfidf_44",
+      "importance": 0.02745142896075038
+    },
+    {
+      "feature": "comparative_ratio",
+      "importance": 0.026400772613536457
+    },
+    {
+      "feature": "tfidf_2",
+      "importance": 0.025950051374960374
+    },
+    {
+      "feature": "tfidf_54",
+      "importance": 0.02551974095631175
+    },
+    {
+      "feature": "tfidf_10",
+      "importance": 0.023321490544315954
+    },
+    {
+      "feature": "tfidf_92",
+      "importance": 0.021825438482011066
+    },
+    {
+      "feature": "tfidf_55",
+      "importance": 0.020372407199089018
+    },
+    {
+      "feature": "tfidf_88",
+      "importance": 0.019540605904950558
+    },
+    {
+      "feature": "tfidf_0",
+      "importance": 0.018920523768670084
+    },
+    {
+      "feature": "tfidf_60",
+      "importance": 0.016710049931731048
+    },
+    {
+      "feature": "tfidf_91",
+      "importance": 0.016689279739856542
+    },
+    {
+      "feature": "tfidf_63",
+      "importance": 0.01564939583472066
+    }
+  ]
+}

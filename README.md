@@ -44,7 +44,41 @@ We focus on *quantifying and improving controllability* — how predictable and 
 
 ---
 
-## 4. Current Goal
+## 4. Dataset Sources
+
+This project uses multiple public datasets to ensure robust evaluation:
+
+### Primary Datasets
+1. **MM-Framing (CopeNLU)**
+   - Source: [HuggingFace - copenlu/mm-framing](https://huggingface.co/datasets/copenlu/mm-framing)
+   - Description: Multi-modal framing analysis dataset with 632k news articles
+   - Contains: News headlines, political leaning labels, frame annotations
+   - Paper: [arXiv:2503.20960](https://arxiv.org/abs/2503.20960)
+   - Usage: Extracted 100 neutral questions from news headlines with center/moderate political leanings
+   - License: MIT License
+
+2. **Social Bias Frames (AllenAI)**
+   - Source: [HuggingFace - allenai/social_bias_frames](https://huggingface.co/datasets/allenai/social_bias_frames)
+   - Description: 150k structured annotations of social media posts with bias implications
+   - Contains: Posts, target groups, stereotypes, offensive content annotations
+   - Paper: [ACL 2020](https://www.aclweb.org/anthology/2020.acl-main.486)
+   - Usage: Topic extraction for generating neutral discussion questions
+   - License: Creative Commons 4.0
+
+### Synthetic Data
+- Generated 50 synthetic questions using templates covering:
+  - AI, renewable energy, remote work, online education
+  - Electric vehicles, social media, automation, cryptocurrency
+  - Healthcare, data privacy, GMOs, space exploration, etc.
+
+### Data Statistics
+- **Total Prompts**: 141 unique neutral questions
+- **Sources**: 100 from mm-framing, 50 synthetic
+- **Location**: `nlp-proj/data/prompts/all_prompts.jsonl`
+
+---
+
+## 5. Current Goal
 - Implement a minimal working pipeline (prompt → response → scoring)  
 - Extend to LoRA/SFT-based controllability experiments  
 
