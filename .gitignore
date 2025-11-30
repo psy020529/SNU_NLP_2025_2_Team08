@@ -53,3 +53,16 @@ build/
 # ------------------------------
 .DS_Store
 Thumbs.db
+
+# ------------------------------
+# Presentation Materials (Private)
+# ------------------------------
+slides/
+FINAL_PRESENTATION_SCRIPT*.txt
+PRESENTATION_SCRIPT*.md
+*PRESENTATION*.txt
+*PRESENTATION*.md
+*.pptx
+*.ppt
+make_final_presentation.py
+make_progress_ppt.py
